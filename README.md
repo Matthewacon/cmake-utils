@@ -26,7 +26,7 @@ include(cmake-download.cmake)
 ## Usage
 Invoke the `find_or_download` function with the required and any one, or
 more, of the optional arguments:
-| Argument | REQUIRED? | Description |
+| Argument | Required? | Description |
 | :-- | :-- | :-- |
 | `PACKAGE_NAME` | REQUIRED | The name of the package to find |
 | `VERSION` | OPTIONAL | The version of the package to find |
