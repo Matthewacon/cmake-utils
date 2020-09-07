@@ -74,7 +74,6 @@ function(find_or_download)
     GIT_REPOSITORY "${fol_GIT_REPO}"
     GIT_TAG "${fol_GIT_TAG}"
    )
-   #ExternalProject_Add_StepTargets(CX NO_DEPENDS download)
 
    add_custom_target("download_bootstrap_${fol_PACKAGE_NAME}" ALL DEPENDS "${fol_PACKAGE_NAME}-download") 
   else()
