@@ -26,11 +26,11 @@ include(cmake-download.cmake)
 ## Usage
 Invoke the `find_or_download` function with the required and any one, or
 more, of the optional arguments:
-| Argument | - | Description |
+| Argument | REQUIRED? | Description |
 | :-- | :-- | :-- |
 | `PACKAGE_NAME` | REQUIRED | The name of the package to find |
 | `VERSION` | OPTIONAL | The version of the package to find |
-| `GIT_REPO` | REQIORED | The repository to download if the package is not found |
+| `GIT_REPO` | REQUIRED | The repository to download if the package is not found |
 | `GIT_TAG` | OPTIONAL | A branch, tag or commit hash, defaults to 'master' |
 | `STATUS_VAR` | OPTIONAL | The variable to store the download status on, set to `TRUE` if downloaded 
 | `DEPS_DIR` | OPTIONAL | Download destination, defaults to `${CMAKE_SOURCE_DIR}/dependencies` |
@@ -59,4 +59,4 @@ endif()
 ```
 
 ## License
-[M.I.T.](https://github.com/Matthewacon/cmake-download/blob/master/LICENSE).
+[M.I.T.](https://github.com/Matthewacon/cmake-download/blob/master/LICENSE)
