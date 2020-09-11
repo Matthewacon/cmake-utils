@@ -64,9 +64,10 @@ function(find_or_download)
   message(STATUS "Found '${fol_PACKAGE_NAME}', not downloading")
   set_status_var(FALSE)
  else()
-  message(STATUS "Could not find '${fol_PACKAGE_NAME}', downloading sources")
+  message(STATUS "Could not find '${fol_PACKAGE_NAME}'")
   set_status_var(TRUE)
   if(NOT EXISTS "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}" OR ${fol_DOWNLOAD_OVERRIDE})
+   message(STATUS "Downloading sources for '${fol_PACKAGE_NAME}'")
    ExternalProject_Add("${fol_PACKAGE_NAME}"
     SOURCE_DIR "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}"
     EXCLUDE_FROM_ALL TRUE
