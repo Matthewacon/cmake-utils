@@ -41,7 +41,7 @@ function(bootstrap_build)
   bb
   ""
   "BOOTSTRAP_NAME;BUILD_CMAKE_ROOT;TARGET_NAME;GENERATOR;BUILD_COMMAND"
-  "ENVIRONMENT;EXTRA_CMAKE_FLAGS"
+  "ENVIRONMENT;EXTRA_CMAKE_FLAGS;DEPENDS"
   ${ARGN}
  )
 
@@ -56,6 +56,7 @@ function(bootstrap_build)
    \n(OPTIONAL) 'BUILD_COMMAND' - The build command to use for the bootstrapped project, defaults to the generator's build command\
    \n(OPTIONAL) 'ENVIRONMENT' - A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks\
    \n(OPTIONAL) 'EXTRA_CMAKE_FLAGS' - A list of CMake flags [FLAG1=1 FLAG2=2 ...] to set when configuring the bootstrapped project\
+   \n(OPTIONAL) 'DEPENDS' - A list of configure dependencies\
   ")
  endif()
  
@@ -141,7 +142,7 @@ function(bootstrap_build)
   COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" ${bb_BUILD_CMAKE_ROOT} ${unpacked_cmake_flags} 
   COMMAND ${CMAKE_COMMAND} -E touch "${bootstrap_configure_output}"
   WORKING_DIRECTORY "${bootstrap_build_dir}"
-  DEPENDS "${bb_TARGET_NAME}_clean" 
+  DEPENDS "${bb_TARGET_NAME}_clean" ${bb_DEPENDS} 
  )
  add_custom_target(
   "${bb_TARGET_NAME}_configure" ALL
