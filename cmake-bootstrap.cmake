@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.8)
-#project(_BOOTSTRAP_BUILD VERSION 0.0.1)
 
 set(_BOOTSTRAP_FILE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-bootstrap.cmake")
 
@@ -43,7 +42,7 @@ function(bootstrap_build)
   bb
   ""
   "BOOTSTRAP_NAME;BUILD_CMAKE_ROOT;TARGET_NAME;GENERATOR;BUILD_COMMAND"
-  "ENVIRONMENT"
+  "ENVIRONMENT;EXTRA_CMAKE_FLAGS"
   ${ARGN}
  )
 
@@ -56,7 +55,8 @@ function(bootstrap_build)
    \n(OPTIONAL) 'TARGET_NAME' - Common target name for bootstrap build tasks (will add targets \"\${TARGET_NAME}_configure\" and \"\${TARGET_NAME}_build\"), defaults to '\${BOOTSTRAP_NAME}'\
    \n(OPTIONAL) 'GENERATOR' - The CMake generator to use for the bootstrapped project, defaults to 'Ninja'\
    \n(OPTIONAL) 'BUILD_COMMAND' - The build command to use for the bootstrapped project, defaults to the generator's build command\
-   \n(OPTIONAL) 'ENVIRONMENT' - A list of environment variables [VAR1=1 VAR2=2...] to use for the bootstrapped configure and build tasks\
+   \n(OPTIONAL) 'ENVIRONMENT' - A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks\
+   \n(OPTIONAL) 'EXTRA_CMAKE_FLAGS' - A list of CMake flags [FLAG1=1 FLAG2=2 ...] to set when configuring the bootstrapped project\
   ")
  endif()
  
@@ -95,6 +95,13 @@ function(bootstrap_build)
    set(unpacked_env ${unpacked_env} ${env_pair})
   endforeach()
  endif()
+
+ #Parse all extra cmake flags
+ if(DEFINED bb_EXTRA_CMAKE_FLAGS)
+  foreach(flag ${bb_EXTRA_CMAKE_FLAGS})
+   set(unpacked_cmake_flags ${unpacked_cmake_flags} "-D${flag}")
+  endforeach()
+ endif()
  
  #Get CLI arguments to pass to bootstrapped build 
  get_cmake_property(invocation_args VARIABLES)
@@ -129,7 +136,7 @@ function(bootstrap_build)
  add_custom_command(
   OUTPUT "Configure bootstrapped project"
   OUTPUT "${bootstrap_configure_output}"
-  COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" "${bb_BUILD_CMAKE_ROOT}" 
+  COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" "${bb_BUILD_CMAKE_ROOT}" "${unpacked_cmake_flags}" 
   COMMAND ${CMAKE_COMMAND} -E touch "${bootstrap_configure_output}"
   WORKING_DIRECTORY "${bootstrap_build_dir}"
   DEPENDS "${bb_TARGET_NAME}_clean" 

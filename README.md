@@ -26,6 +26,7 @@ of the optional arguments:
 | `GENERATOR` | OPTIONAL | The CMake generator to use for the bootstrapped project, defaults to 'Ninja' |
 | `BUILD_COMMAND` | OPTIONAL | The build command to use for the bootstrapped porject, defaults to the generator's build command |
 | `ENVIRONMENT` | OPTIONAL | A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks |
+| `EXTRA_CMAKE_FLAGS` | OPTIONAL | A list of CMake flags [FLAG1=1 FLAG2=2 ...] to set when configuring the bootstrapped project |
 
 ### Example
 ```cmake
