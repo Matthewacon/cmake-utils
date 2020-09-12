@@ -37,6 +37,23 @@ bootstrap_build(
  BUILD_CMAKE_ROOT "path/to/example"
  ENVIRONMENT CC=clang CXX=clang++
 )
+
+#Some downstream command that depends on configure artifacts from "example"
+add_custom_command(
+ OUTPUT stuff
+ COMMAND ${CMAKE_COMMAND} -E echo "Configured!"
+ DEPENDS example_configure
+)
+
+#Another downstream command that depends on build artifacts from "example"
+add_custom_command(
+ OUTPUT things
+ COMMAND ${CMAKE_COMMAND} -E echo "Built!"
+ DEPENDS example_build
+)
+
+#The target for this project 
+add_custom_target(my_custom_target ALL DEPENDS stuff things)
 ```
 
 ## cmake-download
