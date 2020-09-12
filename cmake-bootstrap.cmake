@@ -29,8 +29,7 @@ function(propagate_cli_arguments)
    #All CLI specified build flags will have the property `HELPSTRING="No help, variable specified on the command line."`
    get_property(help_string CACHE "${VAR_NAME}" PROPERTY HELPSTRING)
    if("${help_string}" MATCHES "(No help, variable specified on the command line.)")
-    set(argument "-D${VAR_NAME}=\"${${VAR_NAME}}\"")
-    set(result "${result} -D${VAR_NAME}=${${VAR_NAME}}")
+    set(result ${result} "-D${VAR_NAME}=${${VAR_NAME}}")
    endif()
   endif()
  endforeach()
@@ -106,7 +105,10 @@ function(bootstrap_build)
  #Get CLI arguments to pass to bootstrapped build 
  get_cmake_property(invocation_args VARIABLES)
  propagate_cli_arguments(RESULT_VAR args_to_propagate BUILD_VARIABLES ${invocation_args})
-
+ foreach(flag ${args_to_propagate})
+  set(unpacked_cmake_flags ${unpacked_cmake_flags} ${flag})
+ endforeach()
+ 
  #Directory for bootstrapped build (directory created in script mode, see bottom of file) 
  set(bootstrap_build_dir "${PROJECT_BINARY_DIR}/${bb_BOOTSTRAP_NAME}")
 
