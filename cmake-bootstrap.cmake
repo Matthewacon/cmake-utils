@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
-project(_BOOTSTRAP_BUILD VERSION 0.0.1)
+#project(_BOOTSTRAP_BUILD VERSION 0.0.1)
+
+set(_BOOTSTRAP_FILE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-bootstrap.cmake")
 
 function(propagate_cli_arguments)
  cmake_parse_arguments(
@@ -98,18 +100,30 @@ function(bootstrap_build)
  get_cmake_property(invocation_args VARIABLES)
  propagate_cli_arguments(RESULT_VAR args_to_propagate BUILD_VARIABLES ${invocation_args})
 
- #Directory for bootstrapped build
+ #Directory for bootstrapped build (directory created in script mode, see bottom of file) 
  set(bootstrap_build_dir "${PROJECT_BINARY_DIR}/${bb_BOOTSTRAP_NAME}")
- file(MAKE_DIRECTORY "${bootstrap_build_dir}") 
 
  #Build stage markers
- set(bootstrap_configure_output "${PROJECT_BINARY_DIR}/bootstrap_configured.txt")
- set(bootstrap_build_output "${PROJECT_BINARY_DIR}/bootstrap_built.txt")
+ set(bootstrap_clean_output "virtual_clean_output")
+ set(bootstrap_configure_output "${PROJECT_BINARY_DIR}/${bb_BOOTSTRAP_NAME}_configured.txt")
+ set(bootstrap_build_output "${PROJECT_BINARY_DIR}/${bb_BOOTSTRAP_NAME}_built.txt")
 
- #TODO add a script mode to the bottom of this file that only runs if a specific CLI variable
- # is set. It should do the following:
- #  - Clean out stale build directories if the configure stage marker is missing
- # Run the script as a command in the configure step 
+ #Copy this file to the build directory for usage in script mode (see bottom of file)
+ set(bootstrap_script_path "${PROJECT_BINARY_DIR}/cmake-bootstrap.cmake")
+ if(NOT EXISTS "${bootstrap_script_path}") 
+  file(COPY "${_BOOTSTRAP_FILE_PATH}" DESTINATION "${PROJECT_BINARY_DIR}")
+ endif()
+
+ #Add custom command to deal with stale project builds
+ add_custom_command(
+  OUTPUT "Clean up stale artifacts"
+  OUTPUT "${bootstrap_clean_output}"
+  COMMAND ${CMAKE_COMMAND} -D_BOOTSTRAP_SCRIPT_MODE="ON" -D_BOOTSTRAP_SCRIPT_BUILD_DIR="${PROJECT_BINARY_DIR}" -D_BOOTSTRAP_SCRIPT_TARGET_NAME="${bb_TARGET_NAME}" -D_BOOTSTRAP_SCRIPT_PROJECT_NAME="${bb_BOOTSTRAP_NAME}" -P "${bootstrap_script_path}"
+ )
+ add_custom_target(
+  "${bb_TARGET_NAME}_clean" ALL
+  DEPENDS "${bootstrap_clean_output}"
+ )
 
  #Add custom command to bootstrap configure of dependent project
  add_custom_command(
@@ -118,6 +132,7 @@ function(bootstrap_build)
   COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" "${bb_BUILD_CMAKE_ROOT}" 
   COMMAND ${CMAKE_COMMAND} -E touch "${bootstrap_configure_output}"
   WORKING_DIRECTORY "${bootstrap_build_dir}"
+  DEPENDS "${bb_TARGET_NAME}_clean" 
  )
  add_custom_target(
   "${bb_TARGET_NAME}_configure" ALL
@@ -138,3 +153,34 @@ function(bootstrap_build)
   DEPENDS "${bootstrap_build_output}" 
  )
 endfunction()
+
+#Script mode
+#Cleans up stale build artifacts
+if(DEFINED _BOOTSTRAP_SCRIPT_MODE)
+ if(NOT DEFINED _BOOTSTRAP_SCRIPT_BUILD_DIR
+    OR NOT DEFINED _BOOTSTRAP_SCRIPT_PROJECT_NAME
+    OR NOT DEFINED _BOOTSTRAP_SCRIPT_TARGET_NAME)
+  message(
+   FATAL_ERROR
+   "cmake-bootstrap.cmake in script mode accepts the following named arguments:\
+   \n(REQUIRED) '_BOOTSTRAP_SCRIPT_BUILD_DIR' - The directory top level project invoking bootstrapped builds\
+   \n(REQUIRED) '_BOOTSTRAP_SCRIPT_PROJECT_NAME' - The name of the bootstrapped project\
+   \n(REQUIRED) '_BOOTSTRAP_SCRIPT_TARGET_NAME' - The target name prefix for the bootstrapped project\
+  ")
+ endif()
+
+ set(bootstrapped_build_dir "${_BOOTSTRAP_SCRIPT_BUILD_DIR}/${_BOOTSTRAP_SCRIPT_PROJECT_NAME}")
+
+ #Clean up bootstrapped build directory if the configure stage marker is missing
+ if(NOT EXISTS "${_BOOTSTRAP_SCRIPT_BUILD_DIR}/${_BOOTSTRAP_SCRIPT_TARGET_NAME}_configure.txt")
+  if(EXISTS "${bootstrapped_build_dir}")
+   message(STATUS "Cleaning stale build directory for bootstrapped project: '${_BOOTSTRAP_SCRIPT_PROJECT_NAME}'")
+   file(REMOVE_RECURSE "${bootstrapped_build_dir}")
+  endif()
+ endif()
+
+ #Create bootstrap build directory if it doesn't already exist
+ if(NOT EXISTS "${bootstrapped_build_dir}")
+  file(MAKE_DIRECTORY "${bootstrapped_build_dir}") 
+ endif()
+endif()
