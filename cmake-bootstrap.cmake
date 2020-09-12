@@ -136,7 +136,7 @@ function(bootstrap_build)
  add_custom_command(
   OUTPUT "Configure bootstrapped project"
   OUTPUT "${bootstrap_configure_output}"
-  COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" "${bb_BUILD_CMAKE_ROOT}" "${unpacked_cmake_flags}" 
+  COMMAND ${CMAKE_COMMAND} -E env ${unpacked_env} ${CMAKE_COMMAND} "-G${bb_GENERATOR}" ${bb_BUILD_CMAKE_ROOT} ${unpacked_cmake_flags} 
   COMMAND ${CMAKE_COMMAND} -E touch "${bootstrap_configure_output}"
   WORKING_DIRECTORY "${bootstrap_build_dir}"
   DEPENDS "${bb_TARGET_NAME}_clean" 
