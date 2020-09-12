@@ -1,9 +1,36 @@
-# cmake-download
-A simple cmake function to download a cmake-based project without all the fuss
+# cmake-utils
+A set of utility scripts and functions to ease the setup of complex CMake build pipelines.
+
+Current utilities:
+ - [cmake-bootstrap](https://github.com/Matthewacon/cmake-utils#cmake-bootstrap)
+ - [cmake-download](https://github.com/Matthewacon/cmake-utils#cmake-download)
+
+## cmake-bootstrap
+A CMake function to bootstrap other CMake projects. Allows for complex build
+pipelines that, for example, require projects to be built pre-configure-time.
+
+### Setup
+The setup process is identical to the process described for [cmake-download](), save for the
+file to include: substitute `cmake-bootstrap.cmake` for `cmake-download.cmake`. 
+
+### Usage
+Invoke the `bootstrap_build` function with the required and any one, or more,
+of the optional arguments:
+| Argument | Required? | Description |
+| :-- | :-- | :-- |
+| `BOOTSTRAP_NAME` | REQUIRED | The name of the bootstrapped project |
+| `BUILD_CMAKE_ROOT` | REQUIRED | The directory containing the 'CMakeLists.txt' of the bootstrapped project |
+| `TARGET_NAME` | OPTIONAL | Common target name prefix for all bootstrap build targets, defaults to '${BOOTSTRAP_NAME}' |
+| `GENERATOR` | OPTIONAL | The CMake generator to use for the bootstrapped project, defaults to 'Ninja' |
+| `BUILD_COMMAND` | OPTIONAL | The build command to use for the bootstrapped porject, defaults to the generator's build command |
+| `ENVIRONMENT` | OPTIONAL | A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks |
+
+## cmake-download
+A simple CMake function to download a cmake-based project without all the fuss
 of `ExternalProject_Add`.
 
-## Setup 
-### Submodule
+### Setup 
+#### Submodule
 Add this repository as a submodule to you CMake-based repository:
 ```sh
 git submodule add git@github.com:Matthewacon/cmake-download.git
@@ -13,17 +40,17 @@ then include the download file in your in your top-level `CMakeLists.txt`:
 include(cmake-download/download.cmake)
 ```
 
-### Single file download
+#### Single file download
 Download the `cmake-download.cmake` file into the root of your repository:
 ```sh
-curl https://raw.githubusercontent.com/Matthewacon/cmake-download/master/cmake-download.cmake -o cmake-download.cmake -s
+curl https://raw.githubusercontent.com/Matthewacon/cmake-utils/master/cmake-download.cmake -o cmake-download.cmake -s
 ```
 then include the file in your top-level `CMakeLists.txt`:
 ```sh
 include(cmake-download.cmake)
 ```
 
-## Usage
+### Usage
 Invoke the `find_or_download` function with the required and any one, or
 more, of the optional arguments:
 | Argument | Required? | Description |
@@ -36,10 +63,10 @@ more, of the optional arguments:
 | `DEPS_DIR` | OPTIONAL | Download destination, defaults to `${CMAKE_SOURCE_DIR}/dependencies` |
 | `DOWNLOAD_OVERRIDE` | OPTIONAL | Force downloading of sources |
 
-### Example
+#### Example
 ```cmake
 cmake_minimum_required(VERSION 3.8)
-include(cmake-download/cmake-download.cmake)
+include(cmake-utils/cmake-download.cmake)
 
 find_or_download(
  PACKAGE_NAME gtest
@@ -59,4 +86,4 @@ endif()
 ```
 
 ## License
-[M.I.T.](https://github.com/Matthewacon/cmake-download/blob/master/LICENSE)
+[M.I.T.](https://github.com/Matthewacon/cmake-utils/blob/master/LICENSE)

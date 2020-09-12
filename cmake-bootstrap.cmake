@@ -53,7 +53,7 @@ function(bootstrap_build)
    "'bootstrap_build' accepts the following named arguments:\
    \n(REQUIRED) 'BOOTSTRAP_NAME' - The name of the bootstrapped project\
    \n(REQUIRED) 'BUILD_CMAKE_ROOT' - The directory containing the 'CMakeLists.txt' of the bootstrapped project\
-   \n(OPTIONAL) 'TARGET_NAME' - Common target name for bootstrap build tasks (will add targets \"\${TARGET_NAME}_configure\" and \"\${TARGET_NAME}_build\"), defaults to '_BOOTSTRAP_BUILD_TARGET'\
+   \n(OPTIONAL) 'TARGET_NAME' - Common target name for bootstrap build tasks (will add targets \"\${TARGET_NAME}_configure\" and \"\${TARGET_NAME}_build\"), defaults to '\${BOOTSTRAP_NAME}'\
    \n(OPTIONAL) 'GENERATOR' - The CMake generator to use for the bootstrapped project, defaults to 'Ninja'\
    \n(OPTIONAL) 'BUILD_COMMAND' - The build command to use for the bootstrapped project, defaults to the generator's build command\
    \n(OPTIONAL) 'ENVIRONMENT' - A list of environment variables [VAR1=1 VAR2=2...] to use for the bootstrapped configure and build tasks\
@@ -68,7 +68,7 @@ function(bootstrap_build)
 
  #Use default target name if none is specified
  if(NOT DEFINED bb_TARGET_NAME)
-  set(bb_TARGET_NAME "_BOOSTRAP_BUILD_TARGET")
+  set(bb_TARGET_NAME "${bb_BOOTSTRAP_NAME}")
  endif()
 
  #Use ninja as the default generator is none is specified
