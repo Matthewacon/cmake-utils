@@ -10,8 +10,10 @@ A CMake function to bootstrap other CMake projects. Allows for complex build
 pipelines that, for example, require projects to be built pre-configure-time.
 
 ### Setup
-The setup process is identical to the process described for [cmake-download](), save for the
-file to include: substitute `cmake-bootstrap.cmake` for `cmake-download.cmake`. 
+The setup process is identical to the process described for
+[cmake-download](https://github.com/Matthewacon/cmake-utils#setup-1), save for 
+the file to include: substitute `cmake-bootstrap.cmake` for
+`cmake-download.cmake`. 
 
 ### Usage
 Invoke the `bootstrap_build` function with the required and any one, or more,
@@ -24,6 +26,18 @@ of the optional arguments:
 | `GENERATOR` | OPTIONAL | The CMake generator to use for the bootstrapped project, defaults to 'Ninja' |
 | `BUILD_COMMAND` | OPTIONAL | The build command to use for the bootstrapped porject, defaults to the generator's build command |
 | `ENVIRONMENT` | OPTIONAL | A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks |
+
+### Example
+```cmake
+cmake_minimum_required(VERSION 3.8)
+include(cmake-utils/cmake-bootstrap.cmake)
+
+bootstrap_build(
+ BOOTSTRAP_NAME "example"
+ BUILD_CMAKE_ROOT "path/to/example"
+ ENVIRONMENT CC=clang CXX=clang++
+)
+```
 
 ## cmake-download
 A simple CMake function to download a cmake-based project without all the fuss
