@@ -28,6 +28,13 @@ of the optional arguments:
 | `ENVIRONMENT` | OPTIONAL | A list of environment variables [VAR1=1 VAR2=2 ...] to use for the bootstrapped configure and build tasks |
 | `EXTRA_CMAKE_FLAGS` | OPTIONAL | A list of CMake flags [FLAG1=1 FLAG2=2 ...] to set when configuring the bootstrapped project |
 | `DEPENDS` | OPTIONAL | A list of configure dependencies |
+
+The function will add two new targets that you can use in your project:
+| Target Name | Description |
+| :-- | :-- |
+| `${BOOTSTRAP_NAME}_configure` | The configure task for the bootstrapped project |
+| `${BOOTSTRAP_NAME}_build` | The build task for the bootstrapped project |
+
 ### Example
 ```cmake
 cmake_minimum_required(VERSION 3.8)
@@ -94,6 +101,11 @@ more, of the optional arguments:
 | `STATUS_VAR` | OPTIONAL | The variable to store the download status on, set to `TRUE` if downloaded 
 | `DEPS_DIR` | OPTIONAL | Download destination, defaults to `${CMAKE_SOURCE_DIR}/dependencies` |
 | `DOWNLOAD_OVERRIDE` | OPTIONAL | Force downloading of sources |
+
+The function will add one target that you can use in your project:
+| Target Name | Description |
+| :-- | :-- |
+| `download_${PACKAGE_NAME}` | The download task |
 
 #### Example
 ```cmake

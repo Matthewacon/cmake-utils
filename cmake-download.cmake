@@ -76,7 +76,7 @@ function(find_or_download)
     GIT_TAG "${fol_GIT_TAG}"
    )
 
-   add_custom_target("download_bootstrap_${fol_PACKAGE_NAME}" ALL DEPENDS "${fol_PACKAGE_NAME}-download") 
+   add_custom_target("download_${fol_PACKAGE_NAME}" ALL DEPENDS "${fol_PACKAGE_NAME}-download") 
   else()
    message(STATUS "Found existing sources, not downloading")
   endif()
