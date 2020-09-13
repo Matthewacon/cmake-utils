@@ -48,37 +48,50 @@ function(find_or_download)
   endif()
  endfunction()
 
- #Search for package
  if(NOT DEFINED fol_DOWNLOAD_OVERRIDE)
-  if(${fol_VERSION})
-   find_package("${fol_PACKAGE_NAME}" "${fol_VERSION}" QUIET)
-  else()
-   find_package("${fol_PACkAGE_NAME}" QUIET)
-  endif()
- else()
-  set("${fol_PACKAGE_NAME}_FOUND" TRUE)
+  set(fol_DOWNLOAD_OVERRIDE FALSE)
  endif()
 
- #Download if package not found 
- if("${fol_PACKAGE_NAME}_FOUND" AND NOT ${fol_DOWNLOAD_OVERRIDE})
+ #Search for package
+ if(DEFINED fol_VERSION)
+  find_package("${fol_PACKAGE_NAME}" "${fol_VERSION}" QUIET)
+ else()
+  find_package("${fol_PACKAGE_NAME}" QUIET)
+ endif()
+
+ #Download if package not found
+ set(download_dir "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}")
+ set(download_target_name "download_${fol_PACKAGE_NAME}")
+
+ if("${${fol_PACKAGE_NAME}_FOUND}" AND NOT ${fol_DOWNLOAD_OVERRIDE})
   message(STATUS "Found '${fol_PACKAGE_NAME}', not downloading")
   set_status_var(FALSE)
+
+  #Add empty target to satisfy dependencies
+  add_custom_target("${download_target_name}" ALL)
  else()
-  message(STATUS "Could not find '${fol_PACKAGE_NAME}'")
   set_status_var(TRUE)
-  if(NOT EXISTS "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}" OR ${fol_DOWNLOAD_OVERRIDE})
-   message(STATUS "Downloading sources for '${fol_PACKAGE_NAME}'")
+  #Download package if not already downloaded
+  if(NOT EXISTS "${download_dir}" OR ${fol_DOWNLOAD_OVERRIDE})
+   message(STATUS "Downloading '${fol_PACKAGE_NAME}'")
+
+   #Download sources
    ExternalProject_Add("${fol_PACKAGE_NAME}"
-    SOURCE_DIR "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}"
+    #SOURCE_DIR "${fol_DEPS_DIR}/${fol_PACKAGE_NAME}"
+    SOURCE_DIR "${download_dir}"
     EXCLUDE_FROM_ALL TRUE
     STEP_TARGETS download
     GIT_REPOSITORY "${fol_GIT_REPO}"
     GIT_TAG "${fol_GIT_TAG}"
    )
 
-   add_custom_target("download_${fol_PACKAGE_NAME}" ALL DEPENDS "${fol_PACKAGE_NAME}-download") 
+   #Add target for download task for usage as a dependency
+   add_custom_target("${download_target_name}" ALL DEPENDS "${fol_PACKAGE_NAME}-download")   
   else()
-   message(STATUS "Found existing sources, not downloading")
+   message(STATUS "Found '${fol_PACKAGE_NAME}' sources, not downloading")
+
+   #Add empty target to satisfy dependencies
+   add_custom_target("${download_target_name}" ALL)
   endif()
  endif()
 
