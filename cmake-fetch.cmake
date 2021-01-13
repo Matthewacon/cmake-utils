@@ -11,12 +11,12 @@ function(add_latent_dependency)
   "TARGET_NAMES"
   ${ARGN}
  )
- if(NOT DEFINED adl_NAME OR NOT DEFINED adl_TARGET_NAMES)
+ if(NOT DEFINED adl_NAME)
   message(
    FATAL_ERROR
    "'add_latent_dependency' accepts the following named arguments:\
    \n(REQUIRED) 'NAME' - The designated name of the dependency to download\
-   \n(REQUIRED) 'TARGET_NAMES' - The names of the targets defined by the dependency, for linking later\
+   \n(OPTIONAL) 'TARGET_NAMES' - The names of the targets defined by the dependency, for linking later\
    \n(OPTIONAL) 'SCOPE_ID' - A unique scope prefix to destinguish invocations to all 'X_latent_dependency' functions\
    \nThis function also accepts any arguments that FetchContent_Declare supports\
   ")
@@ -36,8 +36,10 @@ function(add_latent_dependency)
  set("${deps_var}" "${${deps_var}}" PARENT_SCOPE)
 
  #Add target to latent target list
- list(APPEND "${targets_var}" ${adl_TARGET_NAMES})
- set("${targets_var}" "${${targets_var}}" PARENT_SCOPE)
+ if(DEFINED adl_TARGET_NAMES)
+  list(APPEND "${targets_var}" ${adl_TARGET_NAMES})
+  set("${targets_var}" "${${targets_var}}" PARENT_SCOPE)
+ endif()
 
  #Remove 'NAME' and 'TARGET_NAMES' named arguments from 'ARGV' so the rest
  #of the arguments can be propagated to 'FetchContent_Declare'
