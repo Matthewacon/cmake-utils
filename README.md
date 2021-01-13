@@ -166,7 +166,7 @@ parent scope:
 | VARIABLE | DESCRIPTION |
 | :- | :- |
 | `${SCOPE_ID}_latent_dependencies` | A list of dependency names; used internally when invoking `fetch_latent_dependencies` |
-| `${SCOPE_ID}`_latent_targets | A list of targets to link against later in the build lifecycle (see [`TARGETS_VAR`](https://github.com/Matthewacon/cmake-utils#fetch_latent_dependencies)) |
+| `${SCOPE_ID}_latent_targets` | A list of targets to link against later in the build lifecycle (see [`TARGETS_VAR`](https://github.com/Matthewacon/cmake-utils#fetch_latent_dependencies)) |
 
 Note: If the `SCOPE_ID` named variable is not specified, it defaults to `adl`.
 
