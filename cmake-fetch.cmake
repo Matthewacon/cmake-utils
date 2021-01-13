@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.19)
 
+include(FetchContent)
+
 function(add_latent_dependency)
  #Parse and check arguments
  cmake_parse_arguments(
-  ald
+  adl
   ""
   "NAME;SCOPE_ID"
   "TARGET_NAMES"
   ${ARGN}
  )
- if(NOT DEFINED ald_NAME OR NOT DEFINED ald_TARGET_NAME)
+ if(NOT DEFINED adl_NAME OR NOT DEFINED adl_TARGET_NAMES)
   message(
    FATAL_ERROR
    "'add_latent_dependency' accepts the following named arguments:\
@@ -37,20 +39,20 @@ function(add_latent_dependency)
  list(APPEND "${targets_var}" ${adl_TARGET_NAMES})
  set("${targets_var}" "${${targets_var}}" PARENT_SCOPE)
 
- #Remove 'NAME' and 'TARGET_NAME' named arguments from 'ARGV' so the rest
+ #Remove 'NAME' and 'TARGET_NAMES' named arguments from 'ARGV' so the rest
  #of the arguments can be propagated to 'FetchContent_Declare'
  list(FIND ARGV NAME index)
- list(REMOVE_AT ARGV index)
- list(REMOVE_AT ARGV index)
- list(FIND ARGV TARGET_NAME index)
- list(REMOVE_AT ARGV index)
- list(REMOVE_AT ARGV index)
+ list(REMOVE_AT ARGV ${index})
+ list(REMOVE_AT ARGV ${index})
+ list(FIND ARGV TARGET_NAMES index)
+ list(REMOVE_AT ARGV ${index})
+ list(REMOVE_AT ARGV ${index})
 
  #Invoke 'FetchContent_Declare', forwarding all 'ARGV' arguments
  FetchContent_Declare(
-  "${adl_NAME}"
+  ${adl_NAME}
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/dependencies/${adl_NAME}"
-  BINARY_DIR "${CMAKE_BINARY_DIR}/dependencies/${adl_TARGET_NAME}"
+  BINARY_DIR "${CMAKE_BINARY_DIR}/dependencies/${adl_NAME}"
   GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
   USES_TERMINAL_DOWNLOAD TRUE

@@ -190,7 +190,7 @@ include(cmake-utils/cmake-fetch.cmake)
 
 #Add googletest as a dependency
 add_latent_dependency(
- gtest
+ NAME gtest
  GIT_REPOSITORY https://github.com/google/googletest.git
  GIT_TAG release-1.10.0
  TARGET_NAMES gtest
@@ -198,7 +198,7 @@ add_latent_dependency(
 
 #Add google benchmark as a dependency
 add_latent_dependency(
- gbenchmark
+ NAME gbenchmark
  GIT_REPOSITORY https://github.com/google/benchmark.git
  GIT_TAG v1.5.2
  TARGET_NAMES benchmark::benchmark
@@ -225,7 +225,7 @@ project(multiscope-cmake-fetch-example VERSION 0.0.1)
 
 #Add fmt as a main dependency
 add_latent_dependency(
- fmt
+ NAME fmt
  SCOPE_ID main
  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
  GIT_TAG 7.1.3
@@ -233,7 +233,7 @@ add_latent_dependency(
 
 #Add gtest as a test dependency
 add_latent_dependency(
- gtest
+ NAME gtest
  SCOPE_ID test
  GIT_REPOSITORY https://github.com/google/googletest.git
  GIT_TAG release-1.10.0
@@ -242,7 +242,7 @@ add_latent_dependency(
 
 #Add google benchmark as test dependency
 add_latent_dependency(
- gbenchmark
+ NAME gbenchmark
  SCOPE_ID test
  GIT_REPOSITORY https://github.com/google/benchmark.git
  GIT_TAG v1.5.2
@@ -274,7 +274,7 @@ fetch_latent_dependencies(
  TARGETS_VAR main_libraries 
 )
 
-target_include_directories(main ${fmt_SOURCE_DIR}/include)
+target_include_directories(main PRIVATE ${fmt_SOURCE_DIR}/include)
 target_link_libraries(main ${main_libraries})
 ```
 
