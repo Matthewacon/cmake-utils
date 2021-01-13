@@ -24,8 +24,8 @@ function(add_latent_dependency)
  
  #Set up deps and targets variable names for global scope
  if(DEFINED adl_SCOPE_ID)
-  set(deps_var "${SCOPE_ID}_latent_dependencies")
-  set(targets_var "${SCOPE_ID}_latent_targets")
+  set(deps_var "${adl_SCOPE_ID}_latent_dependencies")
+  set(targets_var "${adl_SCOPE_ID}_latent_targets")
  else()
   set(deps_var "adl_latent_dependencies")
   set(targets_var "adl_latent_targets")
