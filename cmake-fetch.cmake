@@ -43,12 +43,16 @@ function(add_latent_dependency)
 
  #Remove 'NAME' and 'TARGET_NAMES' named arguments from 'ARGV' so the rest
  #of the arguments can be propagated to 'FetchContent_Declare'
+ #Note: There are multiple arguments for 'TARGET_NAMES' so they all have
+ #to be removed as well
  list(FIND ARGV NAME index)
  list(REMOVE_AT ARGV ${index})
  list(REMOVE_AT ARGV ${index})
  list(FIND ARGV TARGET_NAMES index)
  list(REMOVE_AT ARGV ${index})
- list(REMOVE_AT ARGV ${index})
+ foreach(target_element ${adl_TARGET_NAMES})
+  list(REMOVE_AT ARGV ${index})
+ endforeach()
 
  #Invoke 'FetchContent_Declare', forwarding all 'ARGV' arguments
  FetchContent_Declare(
@@ -84,10 +88,10 @@ function(fetch_latent_dependencies)
  endif()
 
  #Check that both the deps and targets variables are defined
- if(NOT DEFINED "${deps_var}" OR NOT DEFINED "${targets_var}")
+ if(NOT DEFINED "${deps_var}")
   message(
    FATAL_ERROR 
-   "'fetch_latent_dependencies' invoked but either '${deps_var}' or '${targets_var}' is not defined!\
+   "'fetch_latent_dependencies' invoked but '${deps_var}' is not defined!\
    \nIf you're using the 'SCOPE_ID' parameter when invoking 'add_latent_dependency', you must also specify it here.\
    \n\n'fetch_latent_dependencies' accepts the following named arguments:\
    \n(OPTIONAL) 'SCOPE_ID' - The same scope prefix used when invoking 'add_latent_dependency', if specified\
@@ -97,7 +101,13 @@ function(fetch_latent_dependencies)
 
  #Set the 'TARGETS_VAR' if it was specified
  if(DEFINED fld_TARGETS_VAR)
-  set("${fld_TARGETS_VAR}" "${${targets_var}}" PARENT_SCOPE)
+  if(DEFINED "${targets_var}")
+   set(targets_list "${${targets_var}}")
+  else()
+   set(targets_list "")
+  endif()
+  set("${fld_TARGETS_VAR}" "${targets_list}" PARENT_SCOPE)
+  unset(targets_list)
  endif()
 
  #Populate dependency and add it to the build
