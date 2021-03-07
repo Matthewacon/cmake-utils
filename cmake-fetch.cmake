@@ -72,7 +72,7 @@ function(fetch_latent_dependencies)
  cmake_parse_arguments(
   fld
   ""
-  "SCOPE_ID;TARGETS_VAR"
+  "SCOPE_ID;TARGETS_VAR;NO_FAIL"
   ""
   ${ARGN}
  )
@@ -87,32 +87,40 @@ function(fetch_latent_dependencies)
   set(targets_var "adl_latent_targets")
  endif()
 
+ #Set up switch for no fail
+ if(NOT DEFINED fld_NO_FAIL)
+  set(fld_NO_FAIL FALSE)
+ endif()
+
  #Check that both the deps and targets variables are defined
  if(NOT DEFINED "${deps_var}")
-  message(
-   FATAL_ERROR 
-   "'fetch_latent_dependencies' invoked but '${deps_var}' is not defined!\
-   \nIf you're using the 'SCOPE_ID' parameter when invoking 'add_latent_dependency', you must also specify it here.\
-   \n\n'fetch_latent_dependencies' accepts the following named arguments:\
-   \n(OPTIONAL) 'SCOPE_ID' - The same scope prefix used when invoking 'add_latent_dependency', if specified\
-   \n(OPTIONAL) 'TARGETS_VAR' - The result variable for all targets\
-  ")
+  if(NOT ${fld_NO_FAIL})
+   message(
+    FATAL_ERROR 
+    "'fetch_latent_dependencies' invoked but '${deps_var}' is not defined!\
+    \nIf you're using the 'SCOPE_ID' parameter when invoking 'add_latent_dependency', you must also specify it here.\
+    \n\n'fetch_latent_dependencies' accepts the following named arguments:\
+    \n(OPTIONAL) 'SCOPE_ID' - The same scope prefix used when invoking 'add_latent_dependency', if specified\
+    \n(OPTIONAL) 'TARGETS_VAR' - The result variable for all targets\
+    \n(OPTIONAL) 'NO_FAIL' - Do not throw an error when fetching if no dependencies have been defined (default: 'FALSE')\
+   ")
  endif()
-
- #Set the 'TARGETS_VAR' if it was specified
- if(DEFINED fld_TARGETS_VAR)
-  if(DEFINED "${targets_var}")
-   set(targets_list "${${targets_var}}")
-  else()
-   set(targets_list "")
+ else()
+  #Set the 'TARGETS_VAR' if it was specified
+  if(DEFINED fld_TARGETS_VAR)
+   if(DEFINED "${targets_var}")
+    set(targets_list "${${targets_var}}")
+   else()
+    set(targets_list "")
+   endif()
+   set("${fld_TARGETS_VAR}" "${targets_list}" PARENT_SCOPE)
+   unset(targets_list)
   endif()
-  set("${fld_TARGETS_VAR}" "${targets_list}" PARENT_SCOPE)
-  unset(targets_list)
- endif()
 
- #Populate dependency and add it to the build
- foreach(dep_to_pop ${${deps_var}})
-  FetchContent_Populate(${dep_to_pop})
-  add_subdirectory(${${dep_to_pop}_SOURCE_DIR} ${${dep_to_pop}_BINARY_DIR})
- endforeach()
+  #Populate dependency and add it to the build
+  foreach(dep_to_pop ${${deps_var}})
+   FetchContent_Populate(${dep_to_pop})
+   add_subdirectory(${${dep_to_pop}_SOURCE_DIR} ${${dep_to_pop}_BINARY_DIR})
+  endforeach()
+ endif()
 endfunction()

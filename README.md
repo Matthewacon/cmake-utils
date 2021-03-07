@@ -179,6 +179,7 @@ it will populate all of the projects defined in the list
 | :- | :- | :- |
 | `SCOPE_ID` | OPTIONAL | A unique prefix for the parent-scope latent dependency list |
 | `TARGETS_VAR` | OPTIONAL | The name of the result var for the parent-scope list of latent dependency targets |
+| `NO_FAIL` | OPTIONAL | Flag to silence error when invoking `fetch_latent_dependencies` without having declared any dependencies |
 
 ###  Example
 Simple configuration:
@@ -213,7 +214,7 @@ fetch_latent_dependencies(TARGETS_VAR to_link_against)
 target_include_directories(
  example_binary PRIVATE 
  ${gtest_SOURCE_DIR}/include      #gtest headers
- ${gbenchmark_SOURCE_DIR}/include #gbenchmarm headers
+ ${gbenchmark_SOURCE_DIR}/include #gbenchmark headers
 )
 target_link_libraries(example_binary ${to_link_against})
 ```
