@@ -54,12 +54,19 @@ function(add_latent_dependency)
   list(REMOVE_AT ARGV ${index})
  endforeach()
 
+ #Shallow cloning on macos breaks builds that checkout commits before the HEAD
+ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(ADL_SHALLOW FALSE)
+ else()
+  set(ADL_SHALLOW TRUE)
+ endif()
+
  #Invoke 'FetchContent_Declare', forwarding all 'ARGV' arguments
  FetchContent_Declare(
   ${adl_NAME}
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/dependencies/${adl_NAME}"
   BINARY_DIR "${CMAKE_BINARY_DIR}/dependencies/${adl_NAME}"
-  GIT_SHALLOW TRUE
+  GIT_SHALLOW ${ADL_SHALLOW}
   GIT_PROGRESS TRUE
   USES_TERMINAL_DOWNLOAD TRUE
   USES_TERMINAL_UPDATE TRUE
