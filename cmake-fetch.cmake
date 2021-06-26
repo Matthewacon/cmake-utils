@@ -7,7 +7,7 @@ function(add_latent_dependency)
  cmake_parse_arguments(
   adl
   ""
-  "NAME;SCOPE_ID"
+  "NAME;SCOPE_ID;SHALLOW"
   "TARGET_NAMES"
   ${ARGN}
  )
@@ -18,10 +18,11 @@ function(add_latent_dependency)
    \n(REQUIRED) 'NAME' - The designated name of the dependency to download\
    \n(OPTIONAL) 'TARGET_NAMES' - The names of the targets defined by the dependency, for linking later\
    \n(OPTIONAL) 'SCOPE_ID' - A unique scope prefix to destinguish invocations to all 'X_latent_dependency' functions\
+   \n(OPTIONAL) 'SHALLOW' - Shallow clone dependency (default: 'FALSE')\
    \nThis function also accepts any arguments that FetchContent_Declare supports\
   ")
  endif()
- 
+
  #Set up deps and targets variable names for global scope
  if(DEFINED adl_SCOPE_ID)
   set(deps_var "${adl_SCOPE_ID}_latent_dependencies")
@@ -54,11 +55,11 @@ function(add_latent_dependency)
   list(REMOVE_AT ARGV ${index})
  endforeach()
 
- #Shallow cloning on macos breaks builds that checkout commits before the HEAD
- if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(ADL_SHALLOW FALSE)
+ #Sanitize 'SHALLOW' argument
+ if(DEFINED adl_SHALLOW)
+  set(SHALLOW "${adl_SHALLOW}")
  else()
-  set(ADL_SHALLOW TRUE)
+  set(SHALLOW FALSE)
  endif()
 
  #Invoke 'FetchContent_Declare', forwarding all 'ARGV' arguments
@@ -66,7 +67,7 @@ function(add_latent_dependency)
   ${adl_NAME}
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/dependencies/${adl_NAME}"
   BINARY_DIR "${CMAKE_BINARY_DIR}/dependencies/${adl_NAME}"
-  GIT_SHALLOW ${ADL_SHALLOW}
+  GIT_SHALLOW ${SHALLOW}
   GIT_PROGRESS TRUE
   USES_TERMINAL_DOWNLOAD TRUE
   USES_TERMINAL_UPDATE TRUE
@@ -103,7 +104,7 @@ function(fetch_latent_dependencies)
  if(NOT DEFINED "${deps_var}")
   if(NOT ${fld_NO_FAIL})
    message(
-    FATAL_ERROR 
+    FATAL_ERROR
     "'fetch_latent_dependencies' invoked but '${deps_var}' is not defined!\
     \nIf you're using the 'SCOPE_ID' parameter when invoking 'add_latent_dependency', you must also specify it here.\
     \n\n'fetch_latent_dependencies' accepts the following named arguments:\
