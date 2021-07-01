@@ -112,7 +112,7 @@ function(fetch_latent_dependencies)
     \n(OPTIONAL) 'TARGETS_VAR' - The result variable for all targets\
     \n(OPTIONAL) 'NO_FAIL' - Do not throw an error when fetching if no dependencies have been defined (default: 'FALSE')\
    ")
- endif()
+  endif()
  else()
   #Set the 'TARGETS_VAR' if it was specified
   if(DEFINED fld_TARGETS_VAR)

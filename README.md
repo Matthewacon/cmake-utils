@@ -159,6 +159,7 @@ specific to itself, and are removed from the argument list when invoking
 | `SCOPE_ID` | OPTIONAL | A unique prefix for the parent-scope latent dependency list |
 | `NAME` | REQUIRED | The designated name of the dependency; added to parent-scope list of dependencies |
 | `TARGET_NAMES` | OPTIONAL | A list of targets defined by the dependency; added to parent-scope list of link targets |
+| `SHALLOW` | OPTIONAL | Whether or not the dependency should be shallow cloned; defaults to 'FALSE' |
 
 The function will invoke `FetchContent_Declare`, forwarding any arguments that
 are not specific to `add_latent_dependency`, and define two variables in the
