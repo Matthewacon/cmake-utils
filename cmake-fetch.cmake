@@ -64,6 +64,12 @@ function(add_latent_dependency)
   list(REMOVE_AT ARGV ${index})
   list(REMOVE_AT ARGV ${index})
  endif()
+ #Remove 'SHALLOW' from 'ARGV'
+ list(FIND ARGV SHALLOW index)
+ if(NOT (index EQUAL -1))
+  list(REMOVE_AT ARGV ${index})
+  list(REMOVE_AT ARGV ${index})
+ endif()
 
  #Sanitize 'SHALLOW' argument
  if(DEFINED adl_SHALLOW)
