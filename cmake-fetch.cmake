@@ -44,16 +44,26 @@ function(add_latent_dependency)
 
  #Remove 'NAME' and 'TARGET_NAMES' named arguments from 'ARGV' so the rest
  #of the arguments can be propagated to 'FetchContent_Declare'
- #Note: There are multiple arguments for 'TARGET_NAMES' so they all have
- #to be removed as well
  list(FIND ARGV NAME index)
- list(REMOVE_AT ARGV ${index})
- list(REMOVE_AT ARGV ${index})
- list(FIND ARGV TARGET_NAMES index)
- list(REMOVE_AT ARGV ${index})
- foreach(target_element ${adl_TARGET_NAMES})
+ if(NOT (index EQUAL -1))
   list(REMOVE_AT ARGV ${index})
- endforeach()
+  list(REMOVE_AT ARGV ${index})
+ endif()
+ #Remove 'TARGET_NAMES' from 'ARGV'. There are multiple arguments for
+ #'TARGET_NAMES' so they all have to be removed as well
+ list(FIND ARGV TARGET_NAMES index)
+ if(NOT (index EQUAL -1))
+  list(REMOVE_AT ARGV ${index})
+  foreach(target_element ${adl_TARGET_NAMES})
+   list(REMOVE_AT ARGV ${index})
+  endforeach()
+ endif()
+ #Remove 'SCOPE_ID' from 'ARGV'
+ list(FIND ARGV SCOPE_ID index)
+ if(NOT (index EQUAL -1))
+  list(REMOVE_AT ARGV ${index})
+  list(REMOVE_AT ARGV ${index})
+ endif()
 
  #Sanitize 'SHALLOW' argument
  if(DEFINED adl_SHALLOW)
